@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Tests para PanelTonalidades")
-class PanelTonalidades_Test {
+class PanelTonalidadesTest {
 
     private PanelTonalidades panel;
 
@@ -56,7 +56,7 @@ class PanelTonalidades_Test {
                 new Color(255, 160, 160),
                 new Color(255, 120, 120),
                 new Color(255, 80, 80),
-                new Color(220, 50, 50),  // base (índice 4)
+                new Color(220, 50, 50),
                 new Color(165, 37, 37),
                 new Color(110, 25, 25),
                 new Color(66, 15, 15),
@@ -86,11 +86,9 @@ class PanelTonalidades_Test {
         AtomicReference<Color> colorRecibido = new AtomicReference<>();
         panel.setAlSeleccionarTono(colorRecibido::set);
 
-        // Simular que internamente el callback se llama con un color
         Color tonoEsperado = new Color(100, 150, 200);
         panel.setAlSeleccionarTono(c -> colorRecibido.set(c));
 
-        // Invocar el callback directamente para verificar que funciona
         colorRecibido.set(tonoEsperado);
         assertEquals(tonoEsperado, colorRecibido.get());
     }
@@ -104,9 +102,11 @@ class PanelTonalidades_Test {
     @Test
     @DisplayName("actualizarTonalidades con nombre vacío no lanza excepción")
     void testActualizarTonalidades_nombreVacio() {
-        List<Color> tonos = Arrays.asList(Color.RED, Color.GREEN, Color.BLUE,
+        List<Color> tonos = Arrays.asList(
+                Color.RED, Color.GREEN, Color.BLUE,
                 Color.YELLOW, Color.ORANGE, Color.PINK,
-                Color.CYAN, Color.MAGENTA, Color.WHITE);
+                Color.CYAN, Color.MAGENTA, Color.WHITE
+        );
         assertDoesNotThrow(() -> panel.actualizarTonalidades(tonos, ""));
     }
 }

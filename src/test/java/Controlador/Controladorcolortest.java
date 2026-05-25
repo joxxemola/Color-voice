@@ -22,9 +22,7 @@ import java.awt.Color;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +36,6 @@ class ControladorColorTest {
 
     @BeforeEach
     void setUp() {
-        // Configurar mocks necesarios para el constructor
         doNothing().when(ventanaMock).asignarControlador(any());
         doNothing().when(ventanaMock).mostrarListaColores(anyList());
         doNothing().when(ventanaMock).actualizarVisualizacion(any());
@@ -47,9 +44,6 @@ class ControladorColorTest {
         controlador = new ControladorColor(ventanaMock);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // generarTonalidades
-    // ─────────────────────────────────────────────────────────────
     @Test
     @DisplayName("generarTonalidades retorna exactamente 9 tonos")
     void testGenerarTonalidades_cantidadCorrecta() {
@@ -73,7 +67,6 @@ class ControladorColorTest {
 
         for (int i = 0; i < 4; i++) {
             Color tinte = tonos.get(i);
-            // Los tintes deben tener componentes RGB mayores o iguales al color base
             assertTrue(tinte.getRed() >= base.getRed(),
                     "Tinte[" + i + "] rojo debería ser >= base");
             assertTrue(tinte.getGreen() >= base.getGreen(),
@@ -103,7 +96,7 @@ class ControladorColorTest {
     @Test
     @DisplayName("generarTonalidades no produce valores fuera de [0, 255]")
     void testGenerarTonalidades_valoresEnRango() {
-        Color base = new Color(255, 0, 0); // caso extremo
+        Color base = new Color(255, 0, 0);
         List<Color> tonos = controlador.generarTonalidades(base);
 
         for (Color tono : tonos) {
@@ -119,26 +112,23 @@ class ControladorColorTest {
         Color blanco = new Color(255, 255, 255);
         List<Color> tonos = controlador.generarTonalidades(blanco);
         assertEquals(9, tonos.size());
-        // Todos los tintes de blanco siguen siendo blanco
+
         for (int i = 0; i < 4; i++) {
             assertEquals(blanco, tonos.get(i));
         }
     }
 
     @Test
-    @DisplayName("generarTonalidades con negro produce sólo negro como tintes")
+    @DisplayName("generarTonalidades con negro produce sólo negro como sombras")
     void testGenerarTonalidades_colorNegro() {
         Color negro = new Color(0, 0, 0);
         List<Color> tonos = controlador.generarTonalidades(negro);
-        // La sombra del negro sigue siendo negro
+
         for (int i = 5; i < 9; i++) {
             assertEquals(negro, tonos.get(i));
         }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // seleccionarColor
-    // ─────────────────────────────────────────────────────────────
     @Test
     @DisplayName("seleccionarColor actualiza la visualización en la ventana")
     void testSeleccionarColor_actualizaVentana() {
@@ -155,9 +145,6 @@ class ControladorColorTest {
         verify(ventanaMock, atLeastOnce()).mostrarTonalidades(anyList(), eq("Naranja"));
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // seleccionarTono
-    // ─────────────────────────────────────────────────────────────
     @Test
     @DisplayName("seleccionarTono actualiza visualización con el tono seleccionado")
     void testSeleccionarTono_actualizaVisualizacion() {
@@ -171,15 +158,11 @@ class ControladorColorTest {
     void testSeleccionarTono_nombreEnHex() {
         Color tono = new Color(255, 128, 0);
         controlador.seleccionarTono(tono);
-
         verify(ventanaMock, atLeastOnce()).actualizarVisualizacion(argThat(m
                 -> m.getNombre().startsWith("#")
         ));
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // filtrarPorCategoria
-    // ─────────────────────────────────────────────────────────────
     @Test
     @DisplayName("filtrarPorCategoria 'Primarios' muestra solo 3 colores")
     void testFiltrarPorCategoria_primarios() {
@@ -225,9 +208,6 @@ class ControladorColorTest {
         ));
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // buscarPorNombre
-    // ─────────────────────────────────────────────────────────────
     @Test
     @DisplayName("buscarPorNombre con texto exacto retorna resultado único")
     void testBuscarPorNombre_textoExacto() {
@@ -259,15 +239,12 @@ class ControladorColorTest {
     @DisplayName("buscarPorNombre con texto inexistente retorna lista vacía")
     void testBuscarPorNombre_sinResultados() {
         controlador.buscarPorNombre("XYZInexistente");
-        verify(ventanaMock, atLeastOnce()).mostrarListaColores(argThat(lista
-                -> lista.isEmpty()
-        ));
+        verify(ventanaMock, atLeastOnce()).mostrarListaColores(argThat(List::isEmpty));
     }
 
     @Test
     @DisplayName("buscarPorNombre respeta filtro de categoría activa")
     void testBuscarPorNombre_conCategoriaActiva() {
-        // Filtrar por Primarios primero, luego buscar "a" (Amarillo)
         controlador.filtrarPorCategoria("Primarios");
         clearInvocations(ventanaMock);
         controlador.buscarPorNombre("a");
@@ -276,9 +253,6 @@ class ControladorColorTest {
         ));
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // Constructor / inicialización
-    // ─────────────────────────────────────────────────────────────
     @Test
     @DisplayName("Constructor llama a asignarControlador en la ventana")
     void testConstructor_asignaControlador() {
